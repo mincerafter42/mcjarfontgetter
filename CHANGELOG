@@ -9,3 +9,6 @@ Added changelog.
 Added readme.md.
 Changed name to McJar Font Getter.
 Made glyphs have fewer points.
+
+1.2:
+Added the center align option.

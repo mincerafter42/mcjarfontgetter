@@ -2,7 +2,7 @@
 <script src="UPNG.js"></script>
 <script src="jszip.min.js"></script>
 <script>
-function extractJar(blob,amplifier) { //unzip minecraft.jar
+function extractJar(blob,amplifier,centerA) { //unzip minecraft.jar
 document.getElementById("st").innerText="Making font (see console for more detail)"
 var glyphs={0:new opentype.Glyph({
 name:".notdef",
@@ -47,7 +47,7 @@ var currentpixel=(Math.floor(k/width)*image.width)+(k%width)+topLeftPixel //set 
 l[k%width]=(l[k%width]||0)+imagemap.getUint8(currentpixel*4+3) //add alpha value to current column in l
 if (imagemap.getUint8(currentpixel*4+3)>127) { //if pixel is visible enough to be in font
 //convert k to ttf coordinate system
-var ttfy=(ascent-(Math.floor(k/width)))*amplifier,ttfx=(k%width)*amplifier
+var ttfy=(ascent-(Math.floor(k/width)))*amplifier,ttfx=((k%width)*amplifier)+(!!centerA*(amplifier/2))
 var leftLine=glyphPath.commands.findIndex((ele,ind,arr)=>ind+1<arr.length&&ele.x==ttfx&&ele.y>=ttfy&&arr[ind+1].x==ttfx&&arr[ind+1].y<ttfy) //check if a line is on the left
 if (leftLine>-1) {
 //attach left line
@@ -163,9 +163,10 @@ console.warn("Error: No font detected")
 }
 </script>
 <h1>McJar Font Getter</h1>
-Extracts the "Mojangles" font from a Minecraft .jar file<br>
+Extracts the "Mojangles" font from a Minecraft .jar file<br><br>
+<input type="checkbox" checked id="centerA"><label for="centerA">Center-align glyphs (uncheck for left-align)</label><br>
 <label for="minecraftJar">Choose a Minecraft .jar file</label>
-<input id="minecraftJar" type="file" onChange='extractJar(this.files[0],2)'><span id="st"></span><br>
+<input id="minecraftJar" type="file" onChange='extractJar(this.files[0],2,document.getElementById("centerA").checked)'><span id="st"></span><br><br>
 Components are used under <a href="LICENSE">MIT License</a>.<br>
 See the <a href="README.md">readme</a> for instructions on getting a Minecraft .jar file.<br>
-Version 1.1. Check the <a href="CHANGELOG">changelog</a> for changes.
+Version 1.2. Check the <a href="CHANGELOG">changelog</a> for changes.
