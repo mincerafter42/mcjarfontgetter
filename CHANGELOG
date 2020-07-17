@@ -12,3 +12,6 @@ Made glyphs have fewer points.
 
 1.2:
 Added the center align option.
+
+1.3
+Now supports bumps within enclosed loops (this did not occur in the default Minecraft font at this time)

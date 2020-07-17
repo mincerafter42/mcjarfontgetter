@@ -28,11 +28,11 @@ if (imagepath) {
 console.log("Reading provider "+providers[i].file)
 var image=UPNG.decode(await zip.file(imagepath).async("arraybuffer"))
 var imagemap=new DataView(UPNG.toRGBA8(image)[0]) //get image using file path
-var height=providers[i].height || 8
 var ascent=providers[i].ascent
 var charsPerRow=providers[i].chars[0].replace(/[\udc00-\udfff]/g,"").length
 var charsPerCol=providers[i].chars.length
-var width=imagemap.byteLength/(4*charsPerRow*charsPerCol*height)
+var height=image.height/charsPerCol
+var width=image.width/charsPerRow
 for (var j=0;j<charsPerRow*charsPerCol;j++) { //j cycles through each character
 var currentRow=providers[i].chars[Math.floor(j/charsPerRow)]
 for (var k=0,l=0;k<j%charsPerRow;k++) {if (currentRow.codePointAt(k+l)>0xffff) l++} //finds jth code point, not jth word
@@ -58,14 +58,22 @@ if (topLine>-1) { //this is the tricky bit
 for (var leftClumpStart=leftLine;leftClumpStart>-1;leftClumpStart--) if (glyphPath.commands[leftClumpStart].type=="M") break;
 for (var leftClumpEnd=leftLine;leftClumpEnd<glyphPath.commands.length;leftClumpEnd++) if (glyphPath.commands[leftClumpEnd].type=="Z") break;
 if (topLine>leftClumpStart&&topLine<leftClumpEnd) { //forms a loop
+if (topLine<leftLine) { //path start is outside the loop
 var absorb=glyphPath.commands.splice(topLine+1,leftLine-topLine-1);
 absorb[0].type="M"
 absorb.push({type:"Z"})
 glyphPath.commands.unshift(...absorb)
 topLine+=absorb.length
+} else { //path start is inside the loop
+var absorb=[glyphPath.commands.splice(topLine-1,2),glyphPath.commands.splice(leftLine,topLine-1-leftLine)]
+absorb[0][0].type="M"
+absorb[1].push({type:"Z"})
+glyphPath.commands.push(...(absorb[0].concat(absorb[1])))
+topLine=glyphPath.commands.length-absorb[0].length-absorb[1].length+1
+}
 } else { //no loop
+if (topLine>leftClumpEnd) {topLine-=(leftClumpEnd-leftClumpStart)+1;}
 var absorb=[glyphPath.commands.splice(leftLine,1+leftClumpEnd-leftLine),glyphPath.commands.splice(leftClumpStart,leftLine-leftClumpStart)]
-if (topLine>leftClumpEnd) topLine-=(leftClumpEnd-leftClumpStart)+1;
 absorb[0].pop()
 absorb[1][0].type="L"
 glyphPath.commands.splice(topLine+1,0,...(absorb[0].concat(absorb[1])))
@@ -98,6 +106,7 @@ unicode:currentcodepoint,
 advanceWidth: (k==-1?4:k+2)*amplifier, //width is set to 4 if character is empty
 path:glyphPath
 })
+//console.log("Added glyph "+String.fromCodePoint(currentcodepoint))
 } else {console.log("Skipped duplicate glyph "+String.fromCodePoint(currentcodepoint))}
 }
 } else {console.log("Skipping provider "+providers[i].type)}
@@ -169,4 +178,4 @@ Extracts the "Mojangles" font from a Minecraft .jar file<br><br>
 <input id="minecraftJar" type="file" onChange='extractJar(this.files[0],2,document.getElementById("centerA").checked)'><span id="st"></span><br><br>
 Components are used under <a href="LICENSE">MIT License</a>.<br>
 See the <a href="README.md">readme</a> for instructions on getting a Minecraft .jar file.<br>
-Version 1.2. Check the <a href="CHANGELOG">changelog</a> for changes.
+Version 1.3. Check the <a href="CHANGELOG">changelog</a> for changes.
