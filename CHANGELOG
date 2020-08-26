@@ -19,3 +19,7 @@ Now supports bumps within enclosed loops (this did not occur in the default Mine
 1.4
 Rewrote the bumps within loops support.
 Now supports scaled glyphs.
+
+1.5
+Left-aligned font file now is called "Mojangles left-aligned".
+Pack version 6 no longer outputs "Unknown future version" into console.

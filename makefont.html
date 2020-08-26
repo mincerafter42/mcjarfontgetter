@@ -127,7 +127,7 @@ var finalGlyphArray=[]
 for (j in glyphs) {finalGlyphArray.push(glyphs[j])}
 //create final font
 var finalFont= new opentype.Font({
-familyName:"Mojangles",
+familyName:"Mojangles"+(!centerA?" left-aligned":""),
 styleName:blob.name.split(".").slice(0,-1).join("."),
 unitsPerEm:9*commonMultiple*amplifier,
 ascender:8*commonMultiple*amplifier,
@@ -166,7 +166,7 @@ var cp437=[
 if (zip.file("pack.mcmeta")) { //get pack version from pack.mcmeta if it exists
 var version=JSON.parse(await zip.file("pack.mcmeta").async("string")).pack.pack_format
 if (version>=4) { //default.json mapping exists
-if (version>5) {console.log("Future version detected. Continuing with unknown support.")}
+if (version>6) {console.log("Future version detected. Continuing with unknown support.")}
 return JSON.parse(await zip.file("assets/minecraft/font/default.json").async("string")).providers
 } else if (version==1) { //pack.mcmeta exists, code page 437
 return [{type:"bitmap",file:"minecraft:font/ascii.png",ascent:7,chars:cp437}]
@@ -189,4 +189,4 @@ Extracts the "Mojangles" font from a Minecraft .jar file<br><br>
 <input id="minecraftJar" type="file" onChange='extractJar(this.files[0],2,document.getElementById("centerA").checked)'><span id="st"></span><br><br>
 Components are used under <a href="LICENSE">MIT License</a>.<br>
 See the <a href="README.md">readme</a> for instructions on getting a Minecraft .jar file.<br>
-Version 1.4. Check the <a href="CHANGELOG">changelog</a> for changes.
+Version 1.5. Check the <a href="CHANGELOG">changelog</a> for changes.
